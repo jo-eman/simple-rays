@@ -343,3 +343,9 @@ space curvature :)
 My first three triangles (and an odd rotation bug):
 
 ![Example 4](images/att1.gif)
+
+
+### Sphere implementation fork notes:
+
+Sphere was implemented as a shape in this project for educational purposes. Feel free to point out any areas of improvement
+

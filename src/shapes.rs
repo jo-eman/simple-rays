@@ -1,23 +1,29 @@
-use super::surface::{Triangle};
+use super::surface::Sphere;
+use super::surface::Triangle;
 use super::vector::Point;
 use crate::MathResult;
+
+pub fn sphere(center: Point, radius: f64) -> Sphere {
+    Sphere::new(center, radius)
+}
 
 pub fn triangle(p1: Point, p2: Point, p3: Point) -> MathResult<Triangle> {
     Triangle::new(p1, p2, p3)
 }
 
 pub fn quad(p1: Point, p2: Point, p3: Point, p4: Point) -> MathResult<(Triangle, Triangle)> {
-    Ok((
-        triangle(p1, p2, p3)?,
-        triangle(p1, p2, p4)?
-    ))
+    Ok((triangle(p1, p2, p3)?, triangle(p1, p2, p4)?))
 }
 
 pub fn plane(center: Point, length: f32, width: f32) -> MathResult<(Triangle, Triangle)> {
     let p1 = center + point!(length / 2f32, 0, width / 2f32);
     let p2 = center + point!(-length / 2f32, 0, -width / 2f32);
-    quad(p1, p2, center + point!(length / 2f32, 0, - width / 2f32),
-         center + point!(- length / 2f32, 0, width / 2f32))
+    quad(
+        p1,
+        p2,
+        center + point!(length / 2f32, 0, -width / 2f32),
+        center + point!(-length / 2f32, 0, width / 2f32),
+    )
 }
 
 pub fn tetrahedron(p1: Point, p2: Point, p3: Point, h: Point) -> MathResult<Vec<Triangle>> {
@@ -25,7 +31,7 @@ pub fn tetrahedron(p1: Point, p2: Point, p3: Point, h: Point) -> MathResult<Vec<
         triangle(p1, p2, h)?,
         triangle(p2, p3, h)?,
         triangle(p3, p1, h)?,
-        triangle(p1, p2, p3)?
+        triangle(p1, p2, p3)?,
     ])
 }
 
@@ -46,7 +52,7 @@ pub fn cube(center: Point, size: f64) -> MathResult<Vec<Triangle>> {
                     1 => (size / 2.0, size / 2.0),
                     2 => (size / 2.0, -size / 2.0),
                     3 => (-size / 2.0, size / 2.0),
-                    _ => unreachable!()
+                    _ => unreachable!(),
                 };
                 diff[d1] = ds1;
                 diff[d2] = ds2;
@@ -59,4 +65,3 @@ pub fn cube(center: Point, size: f64) -> MathResult<Vec<Triangle>> {
     }
     Ok(out)
 }
-

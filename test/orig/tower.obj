@@ -1,8 +1,12 @@
-# exported using main
+# exported usin
 
-#sphere 10 10 0 2
-#sphere 1 15 0 3
-#sphere 20 25 1 4
+
+g main
+
+#sphere 0 0 0 1      # Sphere at the origin with radius 1
+#sphere 5 0 0 1.5    # Sphere at (5, 0, 0) with radius 1.5
+#sphere -3 2 1 2      # Sphere at (-3, 2, 1) with radius 2
+
 v 1.937737 12.0899 -10.99677 
 v 0.7877367 12.0899 -9.004911 
 v 2.375365 12.74846 -10.7441 

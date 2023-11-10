@@ -1,6 +1,32 @@
-use super::*;
-use super::vector::*;
 use super::line::Line;
+use super::vector::*;
+use super::*;
+
+pub struct Sphere {
+    center: Point,
+    radius: f64,
+}
+
+impl Sphere {
+    pub fn new(center: Point, radius: f64) -> Self {
+        Sphere { center, radius }
+    }
+    pub fn intersect(&self, ray: &Line) -> Option<f64> {
+        let oc = ray.origin - self.center;
+        let a = ray.direction.dot(ray.direction);
+        let b = 2.0 * oc.dot(ray.direction);
+        let c = oc.dot(oc) - self.radius * self.radius;
+        let discriminant: f64 = b * b - 4.0 * a * c;
+
+        if discriminant > 0.0 {
+            let t = (-b - discriminant.sqrt()) / (2.0 * a);
+            if t > 0.0 {
+                return Some(t);
+            }
+        }
+        None
+    }
+}
 
 #[derive(Debug)]
 pub struct Plane {
@@ -19,7 +45,7 @@ impl Plane {
                 b: y,
                 c: z,
                 d: -(x * p.x + y * p.y + z * p.z),
-            })
+            }),
         }
     }
     pub fn intersect(&self, line: &Line) -> Option<f64> {
@@ -72,7 +98,9 @@ impl Triangle {
         self.plane.contains(pt) && self.is_inside(pt)
     }
     fn is_inside(&self, pt: Point) -> bool {
-        self.vertices.iter().enumerate()
+        self.vertices
+            .iter()
+            .enumerate()
             // for each vertex calculate the cross product of
             // 1) the segment between the vertex and the intersection point
             // 2) the next triangle side
@@ -85,9 +113,16 @@ impl Triangle {
             // that is equivalent to all of them being pairwise codirectional
             .fold(Some(vector!()), |last_opt, v| -> Option<Vector> {
                 match last_opt {
-                    Some(last) => if v.is_codirectional(last) { Some(v + last) } else { None }
+                    Some(last) => {
+                        if v.is_codirectional(last) {
+                            Some(v + last)
+                        } else {
+                            None
+                        }
+                    }
                     None => None,
                 }
-            }).is_some()
+            })
+            .is_some()
     }
 }

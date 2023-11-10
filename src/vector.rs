@@ -1,5 +1,5 @@
 use super::*;
-use std::ops::{Add, Mul, Index, IndexMut};
+use std::ops::{Add, Index, IndexMut, Mul, Sub};
 
 // Point & Vector
 #[derive(Copy, Clone, Debug)]
@@ -12,18 +12,37 @@ pub struct Point {
 pub type Vector = Point;
 
 macro_rules! point {
-    ($x:expr, $y: expr, $z: expr) =>
-        {crate::vector::Point{x: $x as f64, y:  $y as f64, z: $z as f64}}
+    ($x:expr, $y: expr, $z: expr) => {
+        crate::vector::Point {
+            x: $x as f64,
+            y: $y as f64,
+            z: $z as f64,
+        }
+    };
 }
 
 macro_rules! vector {
-    (axis x) => {vector!(1, 0, 0)};
-    (axis y) => {vector!(0, 1, 0)};
-    (axis z) => {vector!(0, 0, 1)};
-    () => {vector!(0,0,0)};
-    ($a: expr, $b: expr) => {vector!($b.x-$a.x, $b.y-$a.y, $b.z-$a.z)};
-    ($x:expr, $y: expr, $z: expr) => {point!($x, $y, $z) as crate::vector::Vector};
-    (cross $a:expr, $b: expr) => {$a.cross($b)};
+    (axis x) => {
+        vector!(1, 0, 0)
+    };
+    (axis y) => {
+        vector!(0, 1, 0)
+    };
+    (axis z) => {
+        vector!(0, 0, 1)
+    };
+    () => {
+        vector!(0, 0, 0)
+    };
+    ($a: expr, $b: expr) => {
+        vector!($b.x - $a.x, $b.y - $a.y, $b.z - $a.z)
+    };
+    ($x:expr, $y: expr, $z: expr) => {
+        point!($x, $y, $z) as crate::vector::Vector
+    };
+    (cross $a:expr, $b: expr) => {
+        $a.cross($b)
+    };
 }
 
 impl Vector {
@@ -48,9 +67,9 @@ impl Vector {
     }
     pub fn cross(&self, v2: Vector) -> Vector {
         Vector {
-            x:  (self.y * v2.z - self.z * v2.y),
+            x: (self.y * v2.z - self.z * v2.y),
             y: -(self.x * v2.z - self.z * v2.x),
-            z:  (self.x * v2.y - self.y * v2.x),
+            z: (self.x * v2.y - self.y * v2.x),
         }
     }
     pub fn is_zero(&self) -> bool {
@@ -60,8 +79,10 @@ impl Vector {
         self.cross(v2).is_zero()
     }
     pub fn is_codirectional(&self, v2: Vector) -> bool {
-        return self.is_collinear(v2) && self.x * v2.x >= -FLOAT_EPS
-            && self.y * v2.y >= -FLOAT_EPS && self.z * v2.z >= -FLOAT_EPS;
+        return self.is_collinear(v2)
+            && self.x * v2.x >= -FLOAT_EPS
+            && self.y * v2.y >= -FLOAT_EPS
+            && self.z * v2.z >= -FLOAT_EPS;
     }
 }
 
@@ -76,10 +97,26 @@ impl Add<Point> for Point {
     }
 }
 
+impl Sub for Point {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self::Output {
+        Point {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
+    }
+}
+
 impl Mul<f64> for Vector {
     type Output = Vector;
     fn mul(self, rhs: f64) -> Self::Output {
-        Vector { x: rhs * self.x, y: rhs * self.y, z: rhs * self.z }
+        Vector {
+            x: rhs * self.x,
+            y: rhs * self.y,
+            z: rhs * self.z,
+        }
     }
 }
 
@@ -97,7 +134,7 @@ impl Index<usize> for Vector {
             0 => &self.x,
             1 => &self.y,
             2 => &self.z,
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     }
 }
@@ -108,7 +145,7 @@ impl IndexMut<usize> for Vector {
             0 => &mut self.x,
             1 => &mut self.y,
             2 => &mut self.z,
-            _ => unreachable!()
+            _ => unreachable!(),
         }
     }
 }
