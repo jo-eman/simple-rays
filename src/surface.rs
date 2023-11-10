@@ -3,7 +3,7 @@ use super::vector::*;
 use super::*;
 
 pub struct Sphere {
-    center: Point,
+    pub center: Point,
     radius: f64,
 }
 
