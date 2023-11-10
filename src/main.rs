@@ -114,7 +114,6 @@ fn cast_ray(env: &Environment, ray: &Line) -> [u8; 3] {
             if t_tri < t_sph {
                 Some(Intersection::Triangle(t_tri, surface))
             } else {
-                println!("Ray intersected with sphere at distance {}", t_sph);
                 Some(Intersection::Sphere(t_sph, sphere))
             }
         }
@@ -135,11 +134,37 @@ fn cast_ray(env: &Environment, ray: &Line) -> [u8; 3] {
                 .unwrap()
         }
         Some(Intersection::Sphere(t, sphere)) => {
-            // Compute color and lighting for sphere intersection
-            // You need to implement the logic for this part based on how you want spheres to be rendered
-            // For example, you can return a constant color or compute shading based on the sphere's properties
-            // This is a placeholder color
-            [255, 0, 0]
+            // Calculate the intersection point
+            let intersection_point = ray.at(t);
+
+            // Calculate the normal at the intersection point
+            let normal = (intersection_point - sphere.center).normalized();
+
+            // Simple diffuse lighting
+            let light_direction = (env.sun - intersection_point).normalized();
+            let light_intensity = normal.dot(light_direction).max(0.0) as f32;
+
+            // Ambient component
+            let ambient = 0.1;
+
+            // Combine the ambient and diffuse components
+            let brightness = (ambient + (1.0 - ambient) * light_intensity).min(1.0);
+
+            let sphere_color = [255, 0, 0]; // Placeholder color
+
+            // Calculate final color
+            let mut final_color = [0u8; 3]; // Initialize a fixed-size array
+            let color_vec: Vec<u8> = sphere_color
+                .iter()
+                .map(|&c| ((c as f32 * brightness) as u8))
+                .collect();
+
+            // Ensure that the color vector has exactly 3 elements
+            if color_vec.len() == 3 {
+                final_color.copy_from_slice(&color_vec);
+            }
+
+            final_color
         }
         None => VOID_COLOR,
     }
